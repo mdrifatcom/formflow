@@ -18,7 +18,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Icons } from "@/components/icons"
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface FormField {
   id: string;
@@ -72,6 +71,7 @@ export default function Home() {
   };
 
   return (
+    <>
     <div className="container mx-auto p-4">
       <Card>
         <CardHeader>
@@ -105,66 +105,58 @@ export default function Home() {
         <CardContent>
           <form onSubmit={handleFormSubmit} className="grid gap-4">
             {fields.map((field) => (
-              
-                
-                  
-                    {field.label}
-                  
-                  {field.type === 'text' && (
-                    <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  )}
-                  {field.type === 'number' && (
-                    <Input type="number" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  )}
-                  {field.type === 'textarea' && (
-                    <Textarea id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  )}
-                  {field.type === 'radio' && (
-                    
+              <div key={field.id}>
+                <Label htmlFor={field.name}>
+                  {field.label}
+                </Label>
+                {field.type === 'text' && (
+                  <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                )}
+                {field.type === 'number' && (
+                  <Input type="number" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                )}
+                {field.type === 'textarea' && (
+                  <Textarea id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                )}
+                {field.type === 'radio' && (
+                  <RadioGroup>
+                    {field.options && field.options.map((option, i) => (
+                      <div key={option.value}>
+                        <RadioGroupItem value={option.value} id={`${field.name}-${i}`} />
+                        <Label htmlFor={`${field.name}-${i}`}>{option.label}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                )}
+                {field.type === 'checkbox' && (
+                  <div>
+                    <Checkbox id={field.name} />
+                    <Label htmlFor={field.name}>
+                      {field.label}
+                    </Label>
+                  </div>
+                )}
+                {field.type === 'dropdown' && (
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder={field.label} />
+                    </SelectTrigger>
+                    <SelectContent>
                       {field.options && field.options.map((option, i) => (
-                        
-                          
-                            
-                            {option.label}
-                          
-                        
+                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                       ))}
-                    
-                  )}
-                  {field.type === 'checkbox' && (
-                    
-                      
-                        
-                          
-                            {field.label}
-                          
-                        
-                      
-                    
-                  )}
-                  {field.type === 'dropdown' && (
-                    
-                      
-                        
-                          {field.label}
-                        
-                        
-                          {field.options && field.options.map((option, i) => (
-                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                          ))}
-                        
-                      
-                    
-                  )}
-                
-              
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             ))}
-            
+            <Button type="submit">
               Submit
-            
+            </Button>
           </form>
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }
