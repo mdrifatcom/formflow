@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { suggestFields } from '@/ai/flows/suggest-fields';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Icons } from "@/components/icons"
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
 
 interface FormField {
   id: string;
@@ -33,7 +35,7 @@ const initialFields: FormField[] = [
     { id: '3', label: 'Message', name: 'message', type: 'textarea' }
   ];
 
-export default function Home() {
+const Home: React.FC = () => {
   const [fields, setFields] = useState<FormField[]>(initialFields);
   const [formTitle, setFormTitle] = useState<string>("");
   const [formDescription, setFormDescription] = useState<string>("");
@@ -69,17 +71,34 @@ export default function Home() {
     console.log("Form submitted!");
   };
 
+    const onDragEnd = useCallback((result: any) => {
+        const { source, destination } = result;
+
+        if (!destination) {
+            return;
+        }
+
+        if (source.index === destination.index) {
+            return;
+        }
+
+        const newFields = [...fields];
+        const [removed] = newFields.splice(source.index, 1);
+        newFields.splice(destination.index, 0, removed);
+
+        setFields(newFields);
+    }, [fields]);
+
+
   return (
-    
-      
-        
-          
-            <CardHeader>
-              <CardTitle>Form Builder</CardTitle>
-              <CardDescription>Build your forms with ease.</CardDescription>
-            </CardHeader>
-          
-          
+    <>
+      <div className="container mx-auto p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Form Builder</CardTitle>
+            <CardDescription>Build your forms with ease.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             
               
                 <Label htmlFor="formTitle">Form Title</Label>
@@ -93,80 +112,100 @@ export default function Home() {
             <Button onClick={handleSuggestFields} className="w-full md:w-auto">
               Suggest Fields
             </Button>
-          
-        
-      
-      
-        
-          
-            <CardHeader>
-              <CardTitle>Generated Form</CardTitle>
-              <CardDescription>Drag and drop to reorder the fields.</CardDescription>
-            </CardHeader>
-          
-        
-        
-          <form onSubmit={handleFormSubmit} className="grid gap-4">
-            {fields.map((field) => (
-              
-                
-                  
-                    <Label htmlFor={field.name}>
-                      {field.label}
-                    </Label>
-                  
-                  {field.type === 'text' && (
-                    <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  )}
-                    {field.type === 'email' && (
-                        <Input type="email" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                    )}
-                  {field.type === 'number' && (
-                    <Input type="number" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  )}
-                  {field.type === 'textarea' && (
-                    <Textarea id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  )}
-                  {field.type === 'radio' && (
-                    <RadioGroup>
-                      {field.options && field.options.map((option, i) => (
-                        
-                          <RadioGroupItem value={option.value} id={`${field.name}-${i}`} />
-                          <Label htmlFor={`${field.name}-${i}`}>{option.label}</Label>
-                        
-                      ))}
-                    </RadioGroup>
-                  )}
-                  {field.type === 'checkbox' && (
-                    
-                      <Checkbox id={field.name} />
-                      <Label htmlFor={field.name}>
-                        {field.label}
-                      </Label>
-                    
-                  )}
-                  {field.type === 'dropdown' && (
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder={field.label} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {field.options && field.options.map((option, i) => (
-                          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                
-              
-            ))}
-            <Button type="submit" className="mt-4">
-              Submit
-            </Button>
-          </form>
-        
-      
-    
-    
+          </CardContent>
+        </Card>
+      </div>
+      <div className="container mx-auto p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Generated Form</CardTitle>
+            <CardDescription>Drag and drop to reorder the fields.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="form-fields">
+                {(provided) => (
+                  <form
+                    onSubmit={handleFormSubmit}
+                    className="grid gap-4"
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                  >
+                    {fields.map((field, index) => (
+                      <Draggable
+                        key={field.id}
+                        draggableId={field.id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          
+                            
+                              
+                                <Label htmlFor={field.name}>
+                                  {field.label}
+                                </Label>
+                              
+                              {field.type === 'text' && (
+                                <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                              )}
+                                {field.type === 'email' && (
+                                    <Input type="email" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                                )}
+                              {field.type === 'number' && (
+                                <Input type="number" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                              )}
+                              {field.type === 'textarea' && (
+                                <Textarea id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                              )}
+                              {field.type === 'radio' && (
+                                <RadioGroup>
+                                  {field.options && field.options.map((option, i) => (
+                                    
+                                      <RadioGroupItem key={`${field.name}-${i}`} value={option.value} id={`${field.name}-${i}`} />
+                                      <Label htmlFor={`${field.name}-${i}`}>{option.label}</Label>
+                                    
+                                  ))}
+                                </RadioGroup>
+                              )}
+                              {field.type === 'checkbox' && (
+                                
+                                  <Checkbox id={field.name} />
+                                  <Label htmlFor={field.name}>
+                                    {field.label}
+                                  </Label>
+                                
+                              )}
+                              {field.type === 'dropdown' && (
+                                <Select>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={field.label} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {field.options && field.options.map((option, i) => (
+                                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            
+                          
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                    <Button type="submit" className="mt-4">
+                      Submit
+                    </Button>
+                  </form>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }
+
+export default Home;
+
