@@ -16,6 +16,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/hooks/use-toast"
+import { Icons } from "@/components/icons"
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface FormField {
   id: string;
@@ -35,6 +38,7 @@ export default function Home() {
   const [fields, setFields] = useState<FormField[]>(initialFields);
   const [formTitle, setFormTitle] = useState<string>("");
   const [formDescription, setFormDescription] = useState<string>("");
+    const { toast } = useToast()
 
   const handleSuggestFields = async () => {
     if (formTitle || formDescription) {
@@ -46,11 +50,17 @@ export default function Home() {
         // For example, you might add the suggested fields to the end of the current fields array.
         // setFields(prevFields => [...prevFields, ...suggested.suggestedFields.map(field => ({ label: field, name: field.toLowerCase().replace(/\s/g, ''), type: 'text', id: Date.now().toString() }))]);
       } catch (error) {
-        console.error("Failed to suggest fields:", error);
-        // Handle error (e.g., display an error message to the user)
+          toast({
+              title: "Failed to suggest fields",
+              description: "There was an error suggesting fields. Please try again.",
+              variant: "destructive",
+          })
       }
     } else {
-      console.warn("Please enter a form title or description to get suggestions.");
+          toast({
+              title: "Please enter form title or description",
+              description: "Please enter a form title or description to get suggestions.",
+          })
     }
   };
 
@@ -62,44 +72,52 @@ export default function Home() {
   };
 
   return (
-    
-    
-      
-        Form Builder
-      
-      Build your forms with ease.
-      
+    <div className="container mx-auto p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Form Builder</CardTitle>
+          <CardDescription>Build your forms with ease.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="formTitle">Form Title</Label>
+                <Input type="text" id="formTitle" value={formTitle} onChange={(e) => setFormTitle(e.target.value)} className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="formDescription">Form Description</Label>
+                <Textarea id="formDescription" value={formDescription} onChange={(e) => setFormDescription(e.target.value)} className="mt-1" />
+              </div>
+            </div>
+            <Button onClick={handleSuggestFields} className="w-full md:w-auto">
+              Suggest Fields
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-      
-        
-          Form Title
-          Form Description
-        
-        Suggest Fields
-      
-
-
-      
-        
-          Generated Form
-          Build your form.
-        
-        
-          
-            
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>Generated Form</CardTitle>
+          <CardDescription>Build your form.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleFormSubmit} className="grid gap-4">
+            {fields.map((field) => (
               
                 
                   
                     {field.label}
                   
                   {field.type === 'text' && (
-                    
+                    <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                   )}
                   {field.type === 'number' && (
-                    
+                    <Input type="number" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                   )}
                   {field.type === 'textarea' && (
-                    
+                    <Textarea id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                   )}
                   {field.type === 'radio' && (
                     
@@ -132,7 +150,7 @@ export default function Home() {
                         
                         
                           {field.options && field.options.map((option, i) => (
-                            {option.label}
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                           ))}
                         
                       
@@ -140,14 +158,13 @@ export default function Home() {
                   )}
                 
               
-            
+            ))}
             
               Submit
             
-          
-        
-      
-    
-    
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
