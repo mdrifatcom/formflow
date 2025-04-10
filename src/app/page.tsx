@@ -70,7 +70,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    
     <div className="container mx-auto p-4">
       <Card>
         <CardHeader>
@@ -104,6 +104,7 @@ export default function Home() {
         <CardContent>
           <form onSubmit={handleFormSubmit} className="grid gap-4">
             {fields.map((field) => (
+              <>
               <div key={field.id}>
                 
                   
@@ -153,6 +154,7 @@ export default function Home() {
                   )}
                 
               </div>
+              </>
             ))}
             <Button type="submit" className="mt-4">
               Submit
@@ -161,6 +163,6 @@ export default function Home() {
         </CardContent>
       </Card>
     </div>
-    </>
+    
   );
 }
