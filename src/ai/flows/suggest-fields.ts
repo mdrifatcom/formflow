@@ -27,6 +27,18 @@ export async function suggestFields(input: SuggestFieldsInput): Promise<SuggestF
   return suggestFieldsFlow(input);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 const prompt = ai.definePrompt({
   name: 'suggestFieldsPrompt',
   input: {
