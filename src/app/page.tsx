@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { suggestFields } from '@/ai/flows/suggest-fields';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -104,8 +104,7 @@ export default function Home() {
         <CardContent>
           <form onSubmit={handleFormSubmit} className="grid gap-4">
             {fields.map((field) => (
-              <>
-              <div key={field.id}>
+              
                 
                   
                     {field.label}
@@ -153,8 +152,7 @@ export default function Home() {
                     </Select>
                   )}
                 
-              </div>
-              </>
+              
             ))}
             <Button type="submit" className="mt-4">
               Submit
