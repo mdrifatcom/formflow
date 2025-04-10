@@ -23,13 +23,13 @@ interface FormField {
   id: string;
   label: string;
   name: string;
-  type: 'text' | 'number' | 'radio' | 'checkbox' | 'dropdown' | 'textarea';
+  type: 'text' | 'number' | 'email' | 'radio' | 'checkbox' | 'dropdown' | 'textarea';
   options?: { label: string; value: string; }[]; // Only for 'dropdown' type
 }
 
 const initialFields: FormField[] = [
     { id: '1', label: 'Full Name', name: 'fullName', type: 'text' },
-    { id: '2', label: 'Email', name: 'email', type: 'text' },
+    { id: '2', label: 'Email', name: 'email', type: 'email' },
     { id: '3', label: 'Message', name: 'message', type: 'textarea' }
   ];
 
@@ -37,7 +37,7 @@ export default function Home() {
   const [fields, setFields] = useState<FormField[]>(initialFields);
   const [formTitle, setFormTitle] = useState<string>("");
   const [formDescription, setFormDescription] = useState<string>("");
-    const { toast } = useToast()
+  const { toast } = useToast()
 
   const handleSuggestFields = async () => {
     if (formTitle || formDescription) {
@@ -63,7 +63,6 @@ export default function Home() {
     }
   };
 
-
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     // Here you would handle the form submission, e.g., sending data to an API.
@@ -79,78 +78,83 @@ export default function Home() {
           <CardDescription>Build your forms with ease.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="formTitle">Form Title</Label>
+          
+            
+              
+                Form Title
                 <Input type="text" id="formTitle" value={formTitle} onChange={(e) => setFormTitle(e.target.value)} className="mt-1" />
-              </div>
-              <div>
-                <Label htmlFor="formDescription">Form Description</Label>
+              
+              
+                Form Description
                 <Textarea id="formDescription" value={formDescription} onChange={(e) => setFormDescription(e.target.value)} className="mt-1" />
-              </div>
-            </div>
+              
+            
             <Button onClick={handleSuggestFields} className="w-full md:w-auto">
               Suggest Fields
             </Button>
-          </div>
+          
         </CardContent>
       </Card>
 
-      <Card className="mt-8">
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Generated Form</CardTitle>
-          <CardDescription>Build your form.</CardDescription>
+          <CardDescription>Drag and drop to reorder the fields.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleFormSubmit} className="grid gap-4">
             {fields.map((field) => (
               <div key={field.id}>
-                <Label htmlFor={field.name}>
-                  {field.label}
-                </Label>
-                {field.type === 'text' && (
-                  <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                )}
-                {field.type === 'number' && (
-                  <Input type="number" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                )}
-                {field.type === 'textarea' && (
-                  <Textarea id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                )}
-                {field.type === 'radio' && (
-                  <RadioGroup>
-                    {field.options && field.options.map((option, i) => (
-                      <div key={option.value}>
-                        <RadioGroupItem value={option.value} id={`${field.name}-${i}`} />
-                        <Label htmlFor={`${field.name}-${i}`}>{option.label}</Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                )}
-                {field.type === 'checkbox' && (
-                  <div>
-                    <Checkbox id={field.name} />
-                    <Label htmlFor={field.name}>
-                      {field.label}
-                    </Label>
-                  </div>
-                )}
-                {field.type === 'dropdown' && (
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder={field.label} />
-                    </SelectTrigger>
-                    <SelectContent>
+                
+                  
+                    {field.label}
+                  
+                  {field.type === 'text' && (
+                    <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                  )}
+                    {field.type === 'email' && (
+                        <Input type="email" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                    )}
+                  {field.type === 'number' && (
+                    <Input type="number" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                  )}
+                  {field.type === 'textarea' && (
+                    <Textarea id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                  )}
+                  {field.type === 'radio' && (
+                    <RadioGroup>
                       {field.options && field.options.map((option, i) => (
-                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                        
+                          <RadioGroupItem value={option.value} id={`${field.name}-${i}`} />
+                          <Label htmlFor={`${field.name}-${i}`}>{option.label}</Label>
+                        
                       ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                    </RadioGroup>
+                  )}
+                  {field.type === 'checkbox' && (
+                    
+                      <Checkbox id={field.name} />
+                      <Label htmlFor={field.name}>
+                        {field.label}
+                      </Label>
+                    
+                  )}
+                  {field.type === 'dropdown' && (
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder={field.label} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {field.options && field.options.map((option, i) => (
+                          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                
               </div>
             ))}
-            <Button type="submit">
+            <Button type="submit" className="mt-4">
               Submit
             </Button>
           </form>
