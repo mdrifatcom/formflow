@@ -71,21 +71,22 @@ export default function Home() {
 
   return (
     
-    <div className="container mx-auto p-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Form Builder</CardTitle>
-          <CardDescription>Build your forms with ease.</CardDescription>
-        </CardHeader>
-        <CardContent>
+      
+        
+          
+            <CardHeader>
+              <CardTitle>Form Builder</CardTitle>
+              <CardDescription>Build your forms with ease.</CardDescription>
+            </CardHeader>
+          
           
             
               
-                Form Title
+                <Label htmlFor="formTitle">Form Title</Label>
                 <Input type="text" id="formTitle" value={formTitle} onChange={(e) => setFormTitle(e.target.value)} className="mt-1" />
               
               
-                Form Description
+                <Label htmlFor="formDescription">Form Description</Label>
                 <Textarea id="formDescription" value={formDescription} onChange={(e) => setFormDescription(e.target.value)} className="mt-1" />
               
             
@@ -93,21 +94,26 @@ export default function Home() {
               Suggest Fields
             </Button>
           
-        </CardContent>
-      </Card>
-
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Generated Form</CardTitle>
-          <CardDescription>Drag and drop to reorder the fields.</CardDescription>
-        </CardHeader>
-        <CardContent>
+        
+      
+      
+        
+          
+            <CardHeader>
+              <CardTitle>Generated Form</CardTitle>
+              <CardDescription>Drag and drop to reorder the fields.</CardDescription>
+            </CardHeader>
+          
+        
+        
           <form onSubmit={handleFormSubmit} className="grid gap-4">
             {fields.map((field) => (
               
                 
                   
-                    {field.label}
+                    <Label htmlFor={field.name}>
+                      {field.label}
+                    </Label>
                   
                   {field.type === 'text' && (
                     <Input type="text" id={field.name} placeholder={field.label} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
@@ -158,9 +164,9 @@ export default function Home() {
               Submit
             </Button>
           </form>
-        </CardContent>
-      </Card>
-    </div>
+        
+      
+    
     
   );
 }
